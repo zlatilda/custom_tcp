@@ -13,6 +13,7 @@
 #include <strings.h>
 #include <cstring>
 #include <arpa/inet.h>
+#include <iostream>
 
 #ifndef CLIENT_H
 #define CLIENT_H
@@ -45,6 +46,7 @@ class client
         uint16_t dst_port;
         unsigned char* data;
         int data_len;
+        struct iphdr* ip_header;
 };
 
 #endif // CLIENT_H

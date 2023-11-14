@@ -105,7 +105,9 @@ void client::ParseIpHeader(unsigned char* packet, int len)
 
             //printf("Dest IP address: %s\n", inet_ntoa(ip_header->daddr));
             //printf("Source IP address: %s\n", inet_ntoa(ip_header->saddr));
+            this->ip_header = ip_header;
 
+            //std::cout << "IP address: " << inet_addr("192.168.233.128") << std::endl;
         }
         else
         {
@@ -246,17 +248,22 @@ void client::Receive(char** argv)
 
             ParseIpHeader(packet_buffer, len);
 
-            ParseTcpHeader(packet_buffer, len);
-
-            if((this->src_port == 80) && (this->dst_port == 100))
+            if(this->ip_header->saddr == inet_addr("192.168.233.128"))
             {
-                if(IsIpAndTcpPacket(packet_buffer, len))
-                {
-                    if(!ParseData(packet_buffer, len))
-                        packets_to_sniff++;
 
-                    print();
+                ParseTcpHeader(packet_buffer, len);
+
+                if((this->src_port == 80) && (this->dst_port == 100))
+                {
+                    if(IsIpAndTcpPacket(packet_buffer, len))
+                    {
+                        if(!ParseData(packet_buffer, len))
+                            packets_to_sniff++;
+
+                        print();
+                    }
                 }
+
             }
         }
     }
@@ -279,6 +286,8 @@ void client::print()
 
     PrintInHex(this->protocol, 2, "Protocol: ");
     printf("\n");
+
+    std::cout << "Source IP address: " << this->ip_header->saddr << std::endl;
 
     printf("Source Port: %d\n", this->src_port);
     printf("Dest Port: %d\n", this->dst_port);
